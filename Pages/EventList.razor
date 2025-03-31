@@ -1,0 +1,41 @@
+@page "/events"
+
+<PageTitle>Event List</PageTitle>
+
+<h1>Upcoming Events</h1>
+
+<Virtualize Items="@Events" Context="eventItem">
+    <div class="event-item">
+        <EventCard EventName="@eventItem.Name" 
+                   EventDate="@eventItem.Date" 
+                   EventLocation="@eventItem.Location" />
+        <NavLink href="@($"/events/details/{eventItem.Id}")" class="details-link">View Details</NavLink>
+    </div>
+</Virtualize>
+
+@code {
+    private List<Event> Events = new List<Event>();
+
+    protected override void OnInitialized()
+    {
+        // Simulate a large data set
+        for (int i = 1; i <= 10000; i++)
+        {
+            Events.Add(new Event
+            {
+                Id = i,
+                Name = $"Event {i}",
+                Date = DateTime.Now.AddDays(i),
+                Location = $"Location {i}"
+            });
+        }
+    }
+
+    private class Event
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public string Location { get; set; } = string.Empty;
+    }
+}

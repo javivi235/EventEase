@@ -1,0 +1,73 @@
+@page "/register"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Event Registration</PageTitle>
+
+<h1>Register for an Event</h1>
+
+<EditForm Model="@registrationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="name">Name:</label>
+        <input id="name" @bind="registrationModel.Name" class="form-control" />
+        <ValidationMessage For="@(() => registrationModel.Name)" />
+    </div>
+
+    <div>
+        <label for="email">Email:</label>
+        <input id="email" @bind="registrationModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => registrationModel.Email)" />
+    </div>
+
+    <div>
+        <label for="event">Event:</label>
+        <select id="event" @bind="registrationModel.EventId" class="form-control">
+            <option value="">Select an event</option>
+            @foreach (var eventItem in Events)
+            {
+                <option value="@eventItem.Id">@eventItem.Name</option>
+            }
+        </select>
+        <ValidationMessage For="@(() => registrationModel.EventId)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@code {
+    private RegistrationModel registrationModel = new RegistrationModel();
+
+    private List<Event> Events = new List<Event>
+    {
+        new Event { Id = 1, Name = "Corporate Gala" },
+        new Event { Id = 2, Name = "Tech Conference" },
+        new Event { Id = 3, Name = "Charity Ball" }
+    };
+
+    private void HandleValidSubmit()
+    {
+        // Handle successful form submission
+        Console.WriteLine($"Registration successful for {registrationModel.Name}");
+    }
+
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "Name is required.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please select an event.")]
+        public int? EventId { get; set; }
+    }
+
+    public class Event
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+}

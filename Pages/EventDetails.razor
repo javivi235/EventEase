@@ -1,0 +1,56 @@
+@page "/events/details/{eventId:int}"
+@using Services
+@inject UserSessionService UserSessionService
+@inject AttendanceService AttendanceService
+
+<PageTitle>Event Details</PageTitle>
+
+<h1>Event Details</h1>
+
+<p><strong>Event ID:</strong> @EventId</p>
+
+@if (UserSessionService.IsLoggedIn)
+{
+    <button class="btn btn-primary" @onclick="MarkAttendance">Mark Attendance</button>
+    <p>@attendanceMessage</p>
+}
+else
+{
+    <p>Please <NavLink href="/login">log in</NavLink> to mark your attendance.</p>
+}
+
+<h2>Attendees</h2>
+@if (Attendees.Count > 0)
+{
+    <ul>
+        @foreach (var attendee in Attendees)
+        {
+            <li>@attendee</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No attendees yet.</p>
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private List<string> Attendees = new();
+    private string attendanceMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Load the list of attendees for the event
+        Attendees = AttendanceService.GetAttendees(EventId);
+    }
+
+    private void MarkAttendance()
+    {
+        AttendanceService.MarkAttendance(EventId, UserSessionService.UserName);
+        Attendees = AttendanceService.GetAttendees(EventId);
+        attendanceMessage = "Your attendance has been recorded.";
+    }
+}
